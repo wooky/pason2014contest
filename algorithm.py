@@ -1,5 +1,5 @@
+import json, random, math
 from communication import Communication
-import json,random,math
 class Algorithm():
 	def run(self):
 		self.com.receive(Communication.Origin.PublishSocket)
@@ -8,6 +8,7 @@ class Algorithm():
 		token = self.gameinfo.client_token
 		player = [x for x in a[u'players'] if x['name']=='teamasdf'][0]
 		opponent = [x for x in a[u'players'] if x['name']!='teamasdf'][0]
+		print "Us: %3d Them: %3d Time remaining: %5d" % (player['score'], opponent['score'], a['timeRemaining'])
 		for tank in player['tanks'] + opponent['tanks']:
 			if tank['projectiles']:
 				self.bulletSpeed = tank['projectiles'][0]['speed']
@@ -36,6 +37,7 @@ class Algorithm():
 				self.send({'comm_type':'ROTATE_TURRET','client_token':token,'direction':'CCW' if diff>0 else 'CW','rads':math.fabs(diff),'tank_id':tank_id})
 				if should_shoot:
 					self.send({'comm_type':'FIRE','client_token':token,'tank_id':tank_id})
+		self.last_opponent = opponent
 				
 	def __init__(self,client):
 		self.com = client.comm
