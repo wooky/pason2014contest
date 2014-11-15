@@ -4,6 +4,7 @@ class Algorithm():
 	def run(self):
 		self.com.receive(Communication.Origin.PublishSocket)
 		a = json.loads(self.com.receive(Communication.Origin.PublishSocket))
+		if a['comm_type'] == 'GAME_END': print "Game ended"
 		if a['comm_type'] != 'GAMESTATE': return
 		token = self.gameinfo.client_token
 		player = [x for x in a[u'players'] if x['name']=='teamasdf'][0]
