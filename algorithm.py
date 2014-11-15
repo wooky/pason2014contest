@@ -32,8 +32,15 @@ class Algorithm():
 				# Check if we should shoot
 				angle = self.atan2positive(enemy['position'][1]-tank['position'][1], enemy['position'][0]-tank['position'][0])-tank['turret']
 				# Only shoot if we are within 9 degrees of an opponent
+				#print "Arc length is", self.arclen(tank, enemy['position'])
+				#if self.arclen(tank, enemy['position']) < 2:
 				if math.fabs(angle) < math.pi/20.0:
 					should_shoot = True
+				# If the projectile is close, move back?
+				if enemy['projectiles']:
+					for p in enemy['projectiles']:
+						if (p['position'][0]-tank['position'][0])**2+(p['position'][1]-tank['position'][1])**2 <= 10:
+							self.send({'comm_type':'MOVE','client_token':token,'direction':'REV','distance':10,'tank_id':tank_id})
 			if closest_opponent_pos[0] != float("inf") and hasattr(self, 'bulletSpeed'):
 				if hasattr(self, 'last_opponent'):
 					prevpos = [x for x in self.last_opponent['tanks'] if x['id']==closest_tank_id]
@@ -63,3 +70,7 @@ class Algorithm():
 		c = math.atan2(a, b)
 		if c < 0: c += 2*math.pi
 		return c
+	def arclen(self, us, them):
+		dist = math.sqrt(math.pow(us['position'][0]-them[0],2)+math.pow(us['position'][1]-them[1],2))
+		a1 = self.atan2positive(them[1]-us['position'][1], them[0]-us['position'][0])
+		return math.fabs(a1 - us['turret']) * dist
