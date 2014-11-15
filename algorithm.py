@@ -20,6 +20,7 @@ class Algorithm():
 			closest_opponent_pos = [float("inf"),float("inf")]
 			should_shoot = False
 			for enemy in opponent['tanks']:
+				if not enemy['alive']: continue
 				# Get closest enemy
 				dist_enemy = (enemy['position'][0]-tank['position'][0])**2+(enemy['position'][1]-tank['position'][1])**2
 				closest_enemy = (closest_opponent_pos[0]-tank['position'][0])**2+(closest_opponent_pos[1]-tank['position'][1])**2
@@ -29,12 +30,12 @@ class Algorithm():
 				# Only shoot if we are within 9 degrees of an opponent
 				if math.fabs(angle) < math.pi/20.0:
 					should_shoot = True
-			#TODO: if no enemy don't do anything
-			calc = self.atan2positive(closest_opponent_pos[1]-tank['position'][1], closest_opponent_pos[0]-tank['position'][0])
-			diff = calc-tank['turret']
-			self.send({'comm_type':'ROTATE_TURRET','client_token':token,'direction':'CCW' if diff>0 else 'CW','rads':math.fabs(diff),'tank_id':tank_id})
-			if should_shoot:
-				self.send({'comm_type':'FIRE','client_token':token,'tank_id':tank_id})
+			if closest_opponent_pos[0] != float("inf"):
+				calc = self.atan2positive(closest_opponent_pos[1]-tank['position'][1], closest_opponent_pos[0]-tank['position'][0])
+				diff = calc-tank['turret']
+				self.send({'comm_type':'ROTATE_TURRET','client_token':token,'direction':'CCW' if diff>0 else 'CW','rads':math.fabs(diff),'tank_id':tank_id})
+				if should_shoot:
+					self.send({'comm_type':'FIRE','client_token':token,'tank_id':tank_id})
 				
 	def __init__(self,client):
 		self.com = client.comm
