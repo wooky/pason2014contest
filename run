@@ -1,0 +1,2 @@
+#!/bin/bash
+python client.py -t $1 -n $2 -m $3 -p asdfghjkl
